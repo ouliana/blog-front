@@ -16,9 +16,9 @@ const getAll = async () => {
   }
 };
 
-const create = async newBlog => {
+const create = async (newBlog, userToken) => {
   const config = {
-    headers: { Authorization: token },
+    headers: { Authorization: `bearer ${userToken}` },
   };
 
   try {

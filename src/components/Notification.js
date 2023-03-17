@@ -1,7 +1,12 @@
-const Notification = ({ message, messageType }) => {
-  if (message === null) return null;
+const Notification = props => {
+  console.log('Notification is running...');
+  if (props.message === null) return null;
 
-  return <div className={messageType}></div>;
+  const { body, type } = props.message;
+
+  console.log('in Notification: ', { body, type });
+
+  return <div className={type}>{body}</div>;
 };
 
 export default Notification;
