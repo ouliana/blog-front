@@ -29,13 +29,17 @@ const create = async (newBlog, userToken) => {
   }
 };
 
-const update = async (id, blogToUpdate) => {
+const update = async (blog, userToken) => {
   const config = {
-    headers: { Authorization: token },
+    headers: { Authorization: `bearer ${userToken}` },
   };
 
+  const url = `${baseUrl}/${blog.id}`;
+  const blogToUpdate = { ...blog };
+  delete blogToUpdate.id;
+
   try {
-    const response = await axios.put(baseUrl, blogToUpdate, config);
+    const response = await axios.put(url, blogToUpdate, config);
     return response.data;
   } catch {
     throw new Error('Cannot update blog ');

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = props => {
+  const { blog, handleLikesUpdate } = props;
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,10 +12,23 @@ const Blog = ({ blog }) => {
   };
 
   const [toShow, setToShow] = useState(false);
+  const [likes, setLikes] = useState(blog.likes);
 
   const showWhenToShow = { display: toShow ? '' : 'none' };
 
   const buttonLabel = toShow ? 'hide' : 'view';
+
+  const submitLikes = async () => {
+    const blogToUpdate = {
+      ...blog,
+      likes: likes + 1,
+      user: blog.user.id,
+    };
+
+    await handleLikesUpdate(blogToUpdate);
+    console.log('afrer await');
+    setLikes(likes + 1);
+  };
 
   return (
     <div style={blogStyle}>
@@ -24,7 +39,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenToShow}>
         <div>{blog.url}</div>
         <div>
-          likes {blog.likes} <button>likes</button>
+          likes {likes} <button onClick={submitLikes}>likes</button>
         </div>
         <div>{blog.user.name}</div>
       </div>

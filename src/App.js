@@ -37,7 +37,13 @@ function App() {
 
   const crateBlogHandle = async blog => {
     blogService.create(blog, user.token).then(response => {
-      setBlogs([...blogs, response]);
+      console.log('response: ', response);
+      const userInfo = {
+        id: response.user,
+        name: user.name,
+        username: user.username,
+      };
+      setBlogs([...blogs, { ...response, user: userInfo }]);
       setMessage({
         body: `A blog ${blog.title} by ${blog.author} added`,
         type: 'success',
@@ -46,6 +52,13 @@ function App() {
         setMessage(null);
       }, 5000);
     });
+  };
+
+  const handleLikesUpdate = async blog => {
+    await blogService.update(blog, user.token);
+
+    const compareFn = (a, b) => b.likes - a.likes;
+    setBlogs(blogs.sort(compareFn));
   };
 
   const blogForm = () => (
@@ -67,7 +80,8 @@ function App() {
 
   useEffect(() => {
     blogService.getAll().then(fetchedBlogs => {
-      setBlogs(fetchedBlogs);
+      const compareFn = (a, b) => b.likes - a.likes;
+      setBlogs(fetchedBlogs.sort(compareFn));
     });
   }, []);
 
@@ -98,6 +112,7 @@ function App() {
           <Blog
             key={blog.id}
             blog={blog}
+            handleLikesUpdate={handleLikesUpdate}
           />
         ))}
       </div>
