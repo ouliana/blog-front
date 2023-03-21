@@ -1,33 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import loginService from './services/login';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import CreateBlogForm from './components/CreateBlogForm';
 
 function App() {
   const [message, setMessage] = useState(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
 
-  const handleLogin = async event => {
-    event.preventDefault();
+  const blogFormRef = useRef();
 
+  const handleLogin = async userObject => {
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
+      const user = await loginService.login(userObject);
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
       setUser(user);
-      setUsername('');
-      setPassword('');
     } catch {
       setMessage({ body: 'Wrong username or password', type: 'error' });
       setTimeout(() => {
@@ -36,13 +30,6 @@ function App() {
     }
   };
 
-  const handleUsernameChange = event => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = event => {
-    setPassword(event.target.value);
-  };
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
@@ -60,6 +47,15 @@ function App() {
       }, 5000);
     });
   };
+
+  const blogForm = () => (
+    <Togglable
+      buttonLabel='new blog'
+      ref={blogFormRef}
+    >
+      <CreateBlogForm crateBlogHandle={crateBlogHandle} />
+    </Togglable>
+  );
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -81,13 +77,7 @@ function App() {
         <h1>Blogs</h1>
         <Notification message={message} />
 
-        <LoginForm
-          username={username}
-          password={password}
-          handleLogin={handleLogin}
-          handleUsernameChange={handleUsernameChange}
-          handlePasswordChange={handlePasswordChange}
-        />
+        <LoginForm signInUser={handleLogin} />
       </div>
     );
   }
@@ -103,7 +93,7 @@ function App() {
 
       <div>
         <h2>Blogs</h2>
-        <CreateBlogForm crateBlogHandle={crateBlogHandle} />
+        {blogForm()}
         {blogs.map(blog => (
           <Blog
             key={blog.id}
