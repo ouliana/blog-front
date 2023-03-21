@@ -5,7 +5,7 @@ import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
-import CreateBlogForm from './components/CreateBlogForm';
+import BlogForm from './components/BlogForm';
 
 function App() {
   const [message, setMessage] = useState(null);
@@ -53,7 +53,7 @@ function App() {
       buttonLabel='new blog'
       ref={blogFormRef}
     >
-      <CreateBlogForm crateBlogHandle={crateBlogHandle} />
+      <BlogForm crateBlogHandle={crateBlogHandle} />
     </Togglable>
   );
 

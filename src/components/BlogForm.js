@@ -1,24 +1,13 @@
 import { useState } from 'react';
 
-const CreateBlogForm = ({ crateBlogHandle }) => {
+const BlogForm = ({ crateBlogHandle }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
-  const handleTitleChange = event => {
-    setTitle(event.target.value);
-  };
-
-  const handleAuthorChange = event => {
-    setAuthor(event.target.value);
-  };
-
-  const handleUrlChange = event => {
-    setUrl(event.target.value);
-  };
-
   const handleSubmit = event => {
     event.preventDefault();
+
     crateBlogHandle({ title, author, url }).then(() => {
       setTimeout(() => {
         setTitle('');
@@ -30,43 +19,35 @@ const CreateBlogForm = ({ crateBlogHandle }) => {
 
   return (
     <>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           title
           <input
             type='text'
-            name='title'
             value={title}
-            onChange={handleTitleChange}
+            onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
           Author
           <input
             type='text'
-            name='author'
             value={author}
-            onChange={handleAuthorChange}
+            onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
           url
           <input
             type='text'
-            name='url'
             value={url}
-            onChange={handleUrlChange}
+            onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button
-          tape='submit'
-          onClick={handleSubmit}
-        >
-          Create
-        </button>
+        <button tape='submit'>Create</button>
       </form>
     </>
   );
 };
 
-export default CreateBlogForm;
+export default BlogForm;
