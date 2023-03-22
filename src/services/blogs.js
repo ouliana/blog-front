@@ -16,9 +16,9 @@ const getAll = async () => {
   }
 };
 
-const create = async (newBlog, userToken) => {
+const create = async newBlog => {
   const config = {
-    headers: { Authorization: `bearer ${userToken}` },
+    headers: { Authorization: token },
   };
 
   try {
@@ -29,9 +29,9 @@ const create = async (newBlog, userToken) => {
   }
 };
 
-const update = async (blog, userToken) => {
+const update = async blog => {
   const config = {
-    headers: { Authorization: `bearer ${userToken}` },
+    headers: { Authorization: token },
   };
 
   const url = `${baseUrl}/${blog.id}`;
@@ -50,12 +50,13 @@ const destroy = async id => {
   const config = {
     headers: { Authorization: token },
   };
+  const url = `${baseUrl}/${id}`;
 
   try {
-    const response = await axios.delete(baseUrl, id, config);
+    const response = await axios.delete(url, config);
     return response.data;
   } catch {
-    throw new Error('Cannot delete blog ');
+    throw new Error('Cannot remove blog ');
   }
 };
 

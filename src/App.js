@@ -36,8 +36,7 @@ function App() {
   };
 
   const crateBlogHandle = async blog => {
-    blogService.create(blog, user.token).then(response => {
-      console.log('response: ', response);
+    blogService.create(blog).then(response => {
       const userInfo = {
         id: response.user,
         name: user.name,
@@ -55,10 +54,20 @@ function App() {
   };
 
   const handleLikesUpdate = async blog => {
-    await blogService.update(blog, user.token);
+    await blogService.update(blog);
 
-    const compareFn = (a, b) => b.likes - a.likes;
-    setBlogs(blogs.sort(compareFn));
+    const byMostLikes = (a, b) => b.likes - a.likes;
+    const updateBlogLikes = b =>
+      b.id === blog.id ? { ...b, likes: blog.likes } : b;
+
+    setBlogs(blogs.map(updateBlogLikes).sort(byMostLikes));
+  };
+
+  const handleRemoveBlog = async id => {
+    await blogService.destroy(id);
+
+    const removeDestroyed = blog => blog.id !== id;
+    setBlogs(blogs.filter(removeDestroyed));
   };
 
   const blogForm = () => (
@@ -75,6 +84,7 @@ function App() {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -113,6 +123,8 @@ function App() {
             key={blog.id}
             blog={blog}
             handleLikesUpdate={handleLikesUpdate}
+            usersOwnBlog={user.username === blog.user.username}
+            handleRemove={handleRemoveBlog}
           />
         ))}
       </div>
