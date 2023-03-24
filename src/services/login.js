@@ -5,10 +5,9 @@ const login = async credentials => {
   try {
     const response = await axios.post(baseURL, credentials);
     return response.data;
-  } catch {
+  } catch (error) {
     throw new Error('Could not log in');
   }
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default { login };

@@ -22,7 +22,7 @@ function App() {
 
       blogService.setToken(user.token);
       setUser(user);
-    } catch {
+    } catch (error) {
       setMessage({ body: 'Wrong username or password', type: 'error' });
       setTimeout(() => {
         setMessage(null);

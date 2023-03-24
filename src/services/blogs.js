@@ -11,7 +11,7 @@ const getAll = async () => {
   try {
     const response = await axios.get(baseUrl);
     return response.data;
-  } catch {
+  } catch (error) {
     throw new Error('Cannot fetch data');
   }
 };
@@ -24,7 +24,7 @@ const create = async newBlog => {
   try {
     const response = await axios.post(baseUrl, newBlog, config);
     return response.data;
-  } catch {
+  } catch (error) {
     throw new Error('Cannot save blog ');
   }
 };
@@ -41,7 +41,7 @@ const update = async blog => {
   try {
     const response = await axios.put(url, blogToUpdate, config);
     return response.data;
-  } catch {
+  } catch (error) {
     throw new Error('Cannot update blog ');
   }
 };
@@ -55,7 +55,7 @@ const destroy = async id => {
   try {
     const response = await axios.delete(url, config);
     return response.data;
-  } catch {
+  } catch (error) {
     throw new Error('Cannot remove blog ');
   }
 };

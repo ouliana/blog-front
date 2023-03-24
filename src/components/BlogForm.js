@@ -5,16 +5,13 @@ const BlogForm = ({ crateBlogHandle }) => {
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
 
-    crateBlogHandle({ title, author, url }).then(() => {
-      setTimeout(() => {
-        setTitle('');
-        setAuthor('');
-        setUrl('');
-      }, 500);
-    });
+    await crateBlogHandle({ title, author, url });
+    setTitle('');
+    setAuthor('');
+    setUrl('');
   };
 
   return (
@@ -26,6 +23,7 @@ const BlogForm = ({ crateBlogHandle }) => {
             type='text'
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            placeholder='title'
           />
         </div>
         <div>
@@ -34,6 +32,7 @@ const BlogForm = ({ crateBlogHandle }) => {
             type='text'
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
+            placeholder='author'
           />
         </div>
         <div>
@@ -42,9 +41,10 @@ const BlogForm = ({ crateBlogHandle }) => {
             type='text'
             value={url}
             onChange={({ target }) => setUrl(target.value)}
+            placeholder='url'
           />
         </div>
-        <button tape='submit'>Create</button>
+        <button type='submit'>save</button>
       </form>
     </>
   );

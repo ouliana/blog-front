@@ -41,12 +41,15 @@ const Blog = props => {
         {blog.title} {blog.author}
         <button onClick={() => setToShow(!toShow)}>{buttonLabel}</button>
       </div>
-      <div style={showWhenToShow}>
+      <div
+        style={showWhenToShow}
+        className='blogDetails'
+      >
         <div>
           <a href={blog.url}>{blog.url}</a>
         </div>
         <div>
-          likes {likes} <button onClick={submitLikes}>likes</button>
+          likes {likes} <button onClick={submitLikes}>like</button>
         </div>
         <div>{blog.user.name}</div>
         <div style={showWhenOwnBlog}>
