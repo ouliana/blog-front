@@ -20,6 +20,7 @@ const LoginForm = signInUser => {
             type='text'
             value={username}
             onChange={({ target }) => setUsername(target.value)}
+            data-test='username'
           />
         </div>
         <div>
@@ -29,9 +30,15 @@ const LoginForm = signInUser => {
             value={password}
             onChange={({ target }) => setPassword(target.value)}
             name='Password'
+            data-test='password'
           />
         </div>
-        <button type='submit'>sign in</button>
+        <button
+          type='submit'
+          data-test='sign in'
+        >
+          sign in
+        </button>
       </form>
     </>
   );
