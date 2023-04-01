@@ -33,7 +33,7 @@ describe('<Blog />', () => {
   });
 
   test(`renders the blog's title and author`, () => {
-    let element = screen.getByText(`Author's Name`, { exact: false });
+    var element = screen.getByText(`Author's Name`, { exact: false });
     expect(element).toBeDefined();
 
     element = screen.getByText(`Blog's title`, { exact: false });

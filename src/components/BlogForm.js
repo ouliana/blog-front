@@ -1,18 +1,9 @@
 import { useState } from 'react';
 
-const BlogForm = ({ crateBlogHandle }) => {
+export default function BlogForm({ crateBlogHandle }) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
-
-  const handleSubmit = async event => {
-    event.preventDefault();
-
-    await crateBlogHandle({ title, author, url });
-    setTitle('');
-    setAuthor('');
-    setUrl('');
-  };
 
   return (
     <>
@@ -24,6 +15,7 @@ const BlogForm = ({ crateBlogHandle }) => {
             value={title}
             onChange={({ target }) => setTitle(target.value)}
             placeholder='title'
+            data-test='input-title'
           />
         </div>
         <div>
@@ -33,6 +25,7 @@ const BlogForm = ({ crateBlogHandle }) => {
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
             placeholder='author'
+            data-test='input-author'
           />
         </div>
         <div>
@@ -42,12 +35,25 @@ const BlogForm = ({ crateBlogHandle }) => {
             value={url}
             onChange={({ target }) => setUrl(target.value)}
             placeholder='url'
+            data-test='input-url'
           />
         </div>
-        <button type='submit'>save</button>
+        <button
+          type='submit'
+          data-test='save'
+        >
+          save
+        </button>
       </form>
     </>
   );
-};
 
-export default BlogForm;
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    await crateBlogHandle({ title, author, url });
+    setTitle('');
+    setAuthor('');
+    setUrl('');
+  }
+}

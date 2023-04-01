@@ -1,9 +1,7 @@
-const Notification = props => {
+export default function Notification(props) {
   if (props.message === null) return null;
 
-  const { body, type } = props.message;
+  var { body, type } = props.message;
 
   return <div className={type}>{body}</div>;
-};
-
-export default Notification;
+}

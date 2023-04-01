@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const Blog = props => {
-  const { blog, handleLikesUpdate, usersOwnBlog, handleRemove } = props;
+export default function Blog(props) {
+  var { blog, handleLikesUpdate, usersOwnBlog, handleRemove } = props;
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,33 +13,21 @@ const Blog = props => {
   const [toShow, setToShow] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
 
-  const showWhenToShow = { display: toShow ? '' : 'none' };
-  const showWhenOwnBlog = { display: usersOwnBlog ? '' : 'none' };
+  var showWhenToShow = { display: toShow ? '' : 'none' };
+  var showWhenOwnBlog = { display: usersOwnBlog ? '' : 'none' };
 
-  const buttonLabel = toShow ? 'hide' : 'view';
-
-  const submitLikes = async () => {
-    const blogToUpdate = {
-      ...blog,
-      likes: likes + 1,
-      user: blog.user.id,
-    };
-
-    await handleLikesUpdate(blogToUpdate);
-    setLikes(likes + 1);
-  };
-
-  const removeBlog = () => {
-    if (!window.confirm(`Remove blog ${blog.title}?`)) return;
-
-    handleRemove(blog.id);
-  };
+  var buttonLabel = toShow ? 'hide' : 'view';
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className='blog'>
         {blog.title} {blog.author}
-        <button onClick={() => setToShow(!toShow)}>{buttonLabel}</button>
+        <button
+          onClick={() => setToShow(!toShow)}
+          data-test='toggle-details-visibility'
+        >
+          {buttonLabel}
+        </button>
       </div>
       <div
         style={showWhenToShow}
@@ -49,15 +37,41 @@ const Blog = props => {
           <a href={blog.url}>{blog.url}</a>
         </div>
         <div>
-          likes {likes} <button onClick={submitLikes}>like</button>
+          likes {likes}{' '}
+          <button
+            onClick={submitLikes}
+            data-test='submitLikes'
+          >
+            like
+          </button>
         </div>
         <div>{blog.user.name}</div>
         <div style={showWhenOwnBlog}>
-          <button onClick={removeBlog}>remove</button>
+          <button
+            onClick={removeBlog}
+            data-test='remove-blog'
+          >
+            remove
+          </button>
         </div>
       </div>
     </div>
   );
-};
 
-export default Blog;
+  async function submitLikes() {
+    var blogToUpdate = {
+      ...blog,
+      likes: likes + 1,
+      user: blog.user.id,
+    };
+
+    await handleLikesUpdate(blogToUpdate);
+    setLikes(likes + 1);
+  }
+
+  function removeBlog() {
+    if (!window.confirm(`Remove blog ${blog.title}?`)) return;
+
+    handleRemove(blog.id);
+  }
+}
