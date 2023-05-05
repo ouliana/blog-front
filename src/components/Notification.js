@@ -1,7 +1,11 @@
-export default function Notification(props) {
-  if (props.message === null) return null;
+import { useSelector } from 'react-redux';
 
-  var { body, type } = props.message;
+export default function Notification() {
+  const notification = useSelector(state => state.notification);
+
+  if (!notification.body) return null;
+
+  const { body, type } = notification;
 
   return <div className={type}>{body}</div>;
 }

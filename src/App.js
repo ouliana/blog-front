@@ -1,14 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { login } from './services/login';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
+import {
+  displaySuccess,
+  displayError,
+  clear,
+} from './reducers/notificationReducer';
 import BlogForm from './components/BlogForm';
 
 export default function App() {
-  const [message, setMessage] = useState(null);
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
 
@@ -39,7 +46,7 @@ export default function App() {
     return (
       <div>
         <h1>Blogs</h1>
-        <Notification message={message} />
+        <Notification />
 
         <LoginForm loginUser={handleLogin} />
       </div>
@@ -49,7 +56,7 @@ export default function App() {
   return (
     <>
       <h1>Blogs</h1>
-      <Notification message={message} />
+      <Notification />
       <div>
         <p className='welcome'>{user.name} logged in</p>
         <button
@@ -80,17 +87,18 @@ export default function App() {
   async function handleLogin(userObject) {
     try {
       var user = await login(userObject);
-      console.log({ user });
+      dispatch(displaySuccess(`${user.name} logged in`));
+      setTimeout(() => dispatch(clear()), 3000);
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
       setUser(user);
     } catch (error) {
-      setMessage({ body: 'Wrong username or password', type: 'error' });
-      setTimeout(() => {
-        setMessage(null);
-      }, 1000);
+      dispatch(displayError('Wrong username or password'));
+      setTimeout(() => dispatch(clear()), 3000);
+
+      // dispatchEvent();
     }
   }
 
@@ -111,14 +119,9 @@ export default function App() {
     };
 
     setBlogs([...blogs, { ...response, user: userInfo }]);
-    setMessage({
-      body: `A blog ${blog.title} by ${blog.author} added`,
-      type: 'success',
-    });
 
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+    dispatch(displaySuccess(`A blog ${blog.title} by ${blog.author} added`));
+    setTimeout(() => dispatch(clear()), 3000);
   }
 
   async function handleLikesUpdate(blog) {
