@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './services/login';
 import blogService from './services/blogs';
@@ -13,20 +13,21 @@ import {
 } from './reducers/notificationReducer';
 import BlogForm from './components/BlogForm';
 import { setAll, createNew } from './reducers/blogReducer';
+import { signIn, signOut } from './reducers/userReducer';
 
 export default function App() {
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const user = useSelector(state => state.user);
   const blogs = useSelector(state => state.blogs);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
-    var loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
-      let user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      const user = JSON.parse(loggedUserJSON);
+      dispatch(signIn(user));
       blogService.setToken(user.token);
     }
   }, []);
@@ -35,11 +36,9 @@ export default function App() {
     getBlogsFromDb();
 
     async function getBlogsFromDb() {
-      var fetchedBlogs = await blogService.getAll();
+      const fetchedBlogs = await blogService.getAll();
       if (fetchedBlogs) {
         const compareFn = (a, b) => b.likes - a.likes;
-
-        //setBlogs(fetchedBlogs.sort(compareFn));
 
         dispatch(setAll(fetchedBlogs.sort(compareFn)));
       }
@@ -98,7 +97,7 @@ export default function App() {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(signIn(user));
     } catch (error) {
       dispatch(displayError('Wrong username or password'));
       setTimeout(() => dispatch(clear()), 3000);
@@ -109,11 +108,11 @@ export default function App() {
 
   function handleLogout() {
     window.localStorage.removeItem('loggedBlogappUser');
-    setUser(null);
+    dispatch(signOut());
   }
 
   async function crateBlogHandle(blog) {
-    var response = await blogService.create(blog);
+    const response = await blogService.create(blog);
 
     blogFormRef.current.toggleVisibility();
 
@@ -136,14 +135,14 @@ export default function App() {
     const mapUpdatedLikes = b =>
       b.id === blog.id ? { ...b, likes: blog.likes } : b;
 
-    setAll(blogs.map(mapUpdatedLikes).sort(byMostLikes));
+    dispatch(setAll(blogs.map(mapUpdatedLikes).sort(byMostLikes)));
   }
 
   async function handleRemoveBlog(id) {
     await blogService.destroy(id);
 
     const removeDestroyed = blog => blog.id !== id;
-    setAll(blogs.filter(removeDestroyed));
+    dispatch(setAll(blogs.filter(removeDestroyed)));
   }
 
   function blogForm() {
