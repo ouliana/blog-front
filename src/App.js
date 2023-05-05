@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from './services/login';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
@@ -12,12 +12,13 @@ import {
   clear,
 } from './reducers/notificationReducer';
 import BlogForm from './components/BlogForm';
+import { setAll, createNew } from './reducers/blogReducer';
 
 export default function App() {
   const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector(state => state.blogs);
 
   const blogFormRef = useRef();
 
@@ -37,7 +38,10 @@ export default function App() {
       var fetchedBlogs = await blogService.getAll();
       if (fetchedBlogs) {
         const compareFn = (a, b) => b.likes - a.likes;
-        setBlogs(fetchedBlogs.sort(compareFn));
+
+        //setBlogs(fetchedBlogs.sort(compareFn));
+
+        dispatch(setAll(fetchedBlogs.sort(compareFn)));
       }
     }
   }, []);
@@ -86,7 +90,8 @@ export default function App() {
   // implementation
   async function handleLogin(userObject) {
     try {
-      var user = await login(userObject);
+      const user = await login(userObject);
+
       dispatch(displaySuccess(`${user.name} logged in`));
       setTimeout(() => dispatch(clear()), 3000);
 
@@ -118,7 +123,7 @@ export default function App() {
       username: user.username,
     };
 
-    setBlogs([...blogs, { ...response, user: userInfo }]);
+    dispatch(createNew({ ...response, user: userInfo }));
 
     dispatch(displaySuccess(`A blog ${blog.title} by ${blog.author} added`));
     setTimeout(() => dispatch(clear()), 3000);
@@ -131,14 +136,14 @@ export default function App() {
     const mapUpdatedLikes = b =>
       b.id === blog.id ? { ...b, likes: blog.likes } : b;
 
-    setBlogs(blogs.map(mapUpdatedLikes).sort(byMostLikes));
+    setAll(blogs.map(mapUpdatedLikes).sort(byMostLikes));
   }
 
   async function handleRemoveBlog(id) {
     await blogService.destroy(id);
 
     const removeDestroyed = blog => blog.id !== id;
-    setBlogs(blogs.filter(removeDestroyed));
+    setAll(blogs.filter(removeDestroyed));
   }
 
   function blogForm() {
