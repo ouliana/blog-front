@@ -6,7 +6,7 @@ import BlogForm from './BlogForm';
 import Togglable from './Togglable';
 import blogService from '../services/blogs';
 
-function BlogList({ user }) {
+function BlogList({ user, dispatchNotification }) {
   const result = useQuery('blogs', async () => {
     const fetchedBlogs = await blogService.getAll();
     console.log('useQuery...');
@@ -62,7 +62,7 @@ function BlogList({ user }) {
     //   username: user.username,
     // };
     // setBlogs([...blogs, { ...response, user: userInfo }]);
-    // dispatchNotification('NEWBLOG', blog);
+    dispatchNotification('NEWBLOG', blog);
   }
 
   function handleLikesUpdate(blog) {
