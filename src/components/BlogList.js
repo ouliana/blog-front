@@ -9,28 +9,36 @@ import blogService from '../services/blogs';
 function BlogList({ user }) {
   const result = useQuery('blogs', async () => {
     const fetchedBlogs = await blogService.getAll();
+    console.log('useQuery...');
 
     const compareFn = (a, b) => b.likes - a.likes;
     return fetchedBlogs.sort(compareFn);
   });
 
-  if (result.isLoading) {
-    return <div>loading data...</div>;
-  }
-
   const queryClient = useQueryClient();
+
   const newBlogMutation = useMutation(blogService.create, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs');
     },
   });
 
-  const blogs = result.data;
   const blogFormRef = useRef();
+
+  if (result.isLoading) {
+    return <div>loading data...</div>;
+  }
+
+  const blogs = result.data;
 
   return (
     <>
-      {blogForm()}
+      <Togglable
+        buttonLabel='New blog'
+        ref={blogFormRef}
+      >
+        <BlogForm crateBlogHandle={createBlogHandle} />
+      </Togglable>
 
       {blogs.map(blog => (
         <Blog
@@ -44,7 +52,20 @@ function BlogList({ user }) {
     </>
   );
 
-  async function handleLikesUpdate(blog) {
+  function createBlogHandle(blog) {
+    //var response = await blogService.create(blog);
+    newBlogMutation.mutate(blog);
+    blogFormRef.current.toggleVisibility();
+    // const userInfo = {
+    //   id: response.user,
+    //   name: user.name,
+    //   username: user.username,
+    // };
+    // setBlogs([...blogs, { ...response, user: userInfo }]);
+    // dispatchNotification('NEWBLOG', blog);
+  }
+
+  function handleLikesUpdate(blog) {
     return blog;
     // await blogService.update(blog);
     // const byMostLikes = (a, b) => b.likes - a.likes;
@@ -53,36 +74,36 @@ function BlogList({ user }) {
     // setBlogs(blogs.map(mapUpdatedLikes).sort(byMostLikes));
   }
 
-  async function handleRemoveBlog(id) {
+  function handleRemoveBlog(id) {
     return id;
     // await blogService.destroy(id);
     // const removeDestroyed = blog => blog.id !== id;
     // setBlogs(blogs.filter(removeDestroyed));
   }
 
-  function blogForm() {
-    return (
-      <Togglable
-        buttonLabel='New blog'
-        ref={blogFormRef}
-      >
-        <BlogForm crateBlogHandle={createBlogHandle} />
-      </Togglable>
-    );
+  // function blogForm() {
+  //   return (
+  //     <Togglable
+  //       buttonLabel='New blog'
+  //       ref={blogFormRef}
+  //     >
+  //       <BlogForm crateBlogHandle={createBlogHandle} />
+  //     </Togglable>
+  //   );
 
-    async function createBlogHandle(blog) {
-      //var response = await blogService.create(blog);
-      newBlogMutation.mutate(blog);
-      // blogFormRef.current.toggleVisibility();
-      // const userInfo = {
-      //   id: response.user,
-      //   name: user.name,
-      //   username: user.username,
-      // };
-      // setBlogs([...blogs, { ...response, user: userInfo }]);
-      // dispatchNotification('NEWBLOG', blog);
-    }
-  }
+  //   async function createBlogHandle(blog) {
+  //     //var response = await blogService.create(blog);
+  //     // newBlogMutation.mutate(blog);
+  //     blogFormRef.current.toggleVisibility();
+  //     // const userInfo = {
+  //     //   id: response.user,
+  //     //   name: user.name,
+  //     //   username: user.username,
+  //     // };
+  //     // setBlogs([...blogs, { ...response, user: userInfo }]);
+  //     // dispatchNotification('NEWBLOG', blog);
+  //   }
+  // }
 }
 
 export default BlogList;
