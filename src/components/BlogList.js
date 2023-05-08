@@ -9,7 +9,6 @@ import blogService from '../services/blogs';
 function BlogList({ user, dispatchNotification }) {
   const result = useQuery('blogs', async () => {
     const fetchedBlogs = await blogService.getAll();
-    console.log('useQuery...');
 
     const compareFn = (a, b) => b.likes - a.likes;
     return fetchedBlogs.sort(compareFn);
@@ -18,6 +17,18 @@ function BlogList({ user, dispatchNotification }) {
   const queryClient = useQueryClient();
 
   const newBlogMutation = useMutation(blogService.create, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+    },
+  });
+
+  const likeBlogMutation = useMutation(blogService.update, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+    },
+  });
+
+  const removeBlogMutation = useMutation(blogService.destroy, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs');
     },
@@ -53,57 +64,19 @@ function BlogList({ user, dispatchNotification }) {
   );
 
   function createBlogHandle(blog) {
-    //var response = await blogService.create(blog);
     newBlogMutation.mutate(blog);
+
     blogFormRef.current.toggleVisibility();
-    // const userInfo = {
-    //   id: response.user,
-    //   name: user.name,
-    //   username: user.username,
-    // };
-    // setBlogs([...blogs, { ...response, user: userInfo }]);
     dispatchNotification('NEWBLOG', blog);
   }
 
   function handleLikesUpdate(blog) {
-    return blog;
-    // await blogService.update(blog);
-    // const byMostLikes = (a, b) => b.likes - a.likes;
-    // const mapUpdatedLikes = b =>
-    //   b.id === blog.id ? { ...b, likes: blog.likes } : b;
-    // setBlogs(blogs.map(mapUpdatedLikes).sort(byMostLikes));
+    likeBlogMutation.mutate(blog);
   }
 
   function handleRemoveBlog(id) {
-    return id;
-    // await blogService.destroy(id);
-    // const removeDestroyed = blog => blog.id !== id;
-    // setBlogs(blogs.filter(removeDestroyed));
+    removeBlogMutation.mutate(id);
   }
-
-  // function blogForm() {
-  //   return (
-  //     <Togglable
-  //       buttonLabel='New blog'
-  //       ref={blogFormRef}
-  //     >
-  //       <BlogForm crateBlogHandle={createBlogHandle} />
-  //     </Togglable>
-  //   );
-
-  //   async function createBlogHandle(blog) {
-  //     //var response = await blogService.create(blog);
-  //     // newBlogMutation.mutate(blog);
-  //     blogFormRef.current.toggleVisibility();
-  //     // const userInfo = {
-  //     //   id: response.user,
-  //     //   name: user.name,
-  //     //   username: user.username,
-  //     // };
-  //     // setBlogs([...blogs, { ...response, user: userInfo }]);
-  //     // dispatchNotification('NEWBLOG', blog);
-  //   }
-  // }
 }
 
 export default BlogList;
