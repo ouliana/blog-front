@@ -1,7 +1,10 @@
-export default function Notification(props) {
-  if (props.message === null) return null;
+import { useNotificationValue } from '../NotificationContext';
 
-  var { body, type } = props.message;
+export default function Notification() {
+  const notification = useNotificationValue();
+  if (notification === null) return null;
+
+  var { body, type } = notification;
 
   return <div className={type}>{body}</div>;
 }

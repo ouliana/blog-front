@@ -6,9 +6,10 @@ import Togglable from './components/Togglable';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
+import { useNotificationDispatch } from './NotificationContext';
 
 export default function App() {
-  const [message, setMessage] = useState(null);
+  const dispatch = useNotificationDispatch();
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
 
@@ -39,7 +40,7 @@ export default function App() {
     return (
       <div>
         <h1>Blogs</h1>
-        <Notification message={message} />
+        <Notification />
 
         <LoginForm loginUser={handleLogin} />
       </div>
@@ -49,7 +50,7 @@ export default function App() {
   return (
     <>
       <h1>Blogs</h1>
-      <Notification message={message} />
+      <Notification />
       <div>
         <p className='welcome'>{user.name} logged in</p>
         <button
@@ -80,18 +81,23 @@ export default function App() {
   async function handleLogin(userObject) {
     try {
       var user = await login(userObject);
-      console.log({ user });
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
       setUser(user);
+
+      dispatchNotification('USERSIGNEDIN', { name: user.name });
     } catch (error) {
-      setMessage({ body: 'Wrong username or password', type: 'error' });
-      setTimeout(() => {
-        setMessage(null);
-      }, 1000);
+      dispatchNotification('AUTHERROR', null);
     }
+  }
+
+  function dispatchNotification(type, payload) {
+    dispatch({ type, payload });
+    setTimeout(() => {
+      dispatch({ type: 'CLEAR' });
+    }, 5000);
   }
 
   function handleLogout() {
@@ -111,14 +117,9 @@ export default function App() {
     };
 
     setBlogs([...blogs, { ...response, user: userInfo }]);
-    setMessage({
-      body: `A blog ${blog.title} by ${blog.author} added`,
-      type: 'success',
-    });
 
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+    console.log('blog: ', blog);
+    dispatchNotification('NEWBLOG', blog);
   }
 
   async function handleLikesUpdate(blog) {
