@@ -6,7 +6,7 @@ import BlogForm from './BlogForm';
 import Togglable from './Togglable';
 import blogService from '../services/blogs';
 
-function BlogList({ user, dispatchNotification }) {
+function BlogList({ user, handleNotification }) {
   const result = useQuery('blogs', async () => {
     const fetchedBlogs = await blogService.getAll();
 
@@ -67,7 +67,7 @@ function BlogList({ user, dispatchNotification }) {
     newBlogMutation.mutate(blog);
 
     blogFormRef.current.toggleVisibility();
-    dispatchNotification('NEWBLOG', blog);
+    handleNotification('NEWBLOG', blog);
   }
 
   function handleLikesUpdate(blog) {

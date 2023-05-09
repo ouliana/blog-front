@@ -1,23 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 
 import Notification from './components/Notification';
 import { useNotificationDispatch } from './NotificationContext';
 
 import LoginForm from './components/LoginForm';
 import { login } from './services/login';
+import userContext from './UserContext';
 
 import blogService from './services/blogs';
 import BlogList from './components/BlogList';
 
 export default function App() {
-  const dispatch = useNotificationDispatch();
-  const [user, setUser] = useState(null);
+  const dispatchNotification = useNotificationDispatch();
+  const [user, userDispatch] = useContext(userContext);
 
   useEffect(() => {
     var loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       let user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      userDispatch({ type: 'SIGNEDIN', payload: user });
       blogService.setToken(user.token);
     }
   }, []);
@@ -51,7 +52,7 @@ export default function App() {
         <h2>Blogs</h2>
         <BlogList
           user={user}
-          dispatchNotification={dispatchNotification}
+          handleNotification={handleNotification}
         />
       </div>
     </>
@@ -61,28 +62,29 @@ export default function App() {
 
   async function handleLogin(userObject) {
     try {
-      var user = await login(userObject);
+      const user = await login(userObject);
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
-      setUser(user);
+      console.log('user:', user);
+      userDispatch({ type: 'SIGNEDIN', payload: user });
 
-      dispatchNotification('USERSIGNEDIN', user);
+      handleNotification('USERSIGNEDIN', user);
     } catch (error) {
-      dispatchNotification('AUTHERROR', null);
+      handleNotification('AUTHERROR', null);
     }
   }
 
   function handleLogout() {
     window.localStorage.removeItem('loggedBlogappUser');
-    setUser(null);
+    userDispatch({ type: 'CLEAR' });
   }
 
-  function dispatchNotification(type, payload) {
-    dispatch({ type, payload });
+  function handleNotification(type, payload) {
+    dispatchNotification({ type, payload });
     setTimeout(() => {
-      dispatch({ type: 'CLEAR' });
+      dispatchNotification({ type: 'CLEAR' });
     }, 5000);
   }
 }
