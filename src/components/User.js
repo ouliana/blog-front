@@ -6,9 +6,10 @@ const baseUrl = '/api/users';
 const generateKey = () => Math.floor(Math.floor(Math.random() * 10000));
 
 function User() {
-  const result = useQuery('users', async () => {
+  const id = useParams().id;
+  const result = useQuery('user', async () => {
     try {
-      const response = await axios.get(baseUrl);
+      const response = await axios.get(`${baseUrl}/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Cannot fetch data');
@@ -19,15 +20,13 @@ function User() {
     return <div>loading data...</div>;
   }
 
-  const users = result.data;
-
-  const id = useParams().id;
-  console.log({ id });
-  const user = users.find(n => n.id === id);
+  const user = result.data;
+  if (!user) return null;
 
   return (
     <div>
       <h2>{user.name}</h2>
+      <h3>added blogs</h3>
       <ul>
         {user.blogs.map(blog => (
           <li key={generateKey()}>{blog.title}</li>
