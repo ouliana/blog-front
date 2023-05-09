@@ -1,4 +1,6 @@
 import { useQuery } from 'react-query';
+import { Link } from 'react-router-dom';
+
 import axios from 'axios';
 const baseUrl = '/api/users';
 
@@ -29,7 +31,9 @@ function Users() {
           </tr>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}

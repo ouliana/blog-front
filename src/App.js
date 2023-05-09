@@ -9,6 +9,7 @@ import LoginForm from './components/LoginForm';
 import { login } from './services/login';
 import userContext from './UserContext';
 import Users from './components/Users';
+import User from './components/User';
 
 import blogService from './services/blogs';
 import BlogList from './components/BlogList';
@@ -51,9 +52,8 @@ export default function App() {
         </button>
       </div>
 
+      <div>Links will be here</div>
       <Router>
-        <div>Links will be here</div>
-
         <Routes>
           <Route
             path='/'
@@ -68,6 +68,11 @@ export default function App() {
           <Route
             path='/users'
             element={<Users />}
+          />
+
+          <Route
+            path='/users/:id'
+            element={<User />}
           />
         </Routes>
       </Router>
