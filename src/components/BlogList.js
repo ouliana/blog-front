@@ -44,6 +44,8 @@ function BlogList({ user, handleNotification }) {
 
   return (
     <>
+      <h2>Blogs</h2>
+
       <Togglable
         buttonLabel='New blog'
         ref={blogFormRef}

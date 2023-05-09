@@ -1,11 +1,14 @@
 import { useEffect, useContext } from 'react';
 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Notification from './components/Notification';
 import { useNotificationDispatch } from './NotificationContext';
 
 import LoginForm from './components/LoginForm';
 import { login } from './services/login';
 import userContext from './UserContext';
+import Users from './components/Users';
 
 import blogService from './services/blogs';
 import BlogList from './components/BlogList';
@@ -48,13 +51,26 @@ export default function App() {
         </button>
       </div>
 
-      <div>
-        <h2>Blogs</h2>
-        <BlogList
-          user={user}
-          handleNotification={handleNotification}
-        />
-      </div>
+      <Router>
+        <div>Links will be here</div>
+
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <BlogList
+                user={user}
+                handleNotification={handleNotification}
+              />
+            }
+          />
+
+          <Route
+            path='/users'
+            element={<Users />}
+          />
+        </Routes>
+      </Router>
     </>
   );
 
