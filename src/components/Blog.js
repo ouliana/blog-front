@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import blogService from '../services/blogs';
 import axios from 'axios';
+import Comments from './Comments';
+
 const baseUrl = '/api/blogs';
 
 export default function Blog({ user }) {
@@ -10,30 +12,23 @@ export default function Blog({ user }) {
   const navigate = useNavigate();
 
   var blog = null;
+  const [likes, setLikes] = useState(0);
 
   const result = useQuery('blog', async () => {
     try {
       const response = await axios.get(`${baseUrl}/${id}`);
+      setLikes(response.data.likes);
       return response.data;
     } catch (error) {
       throw new Error('Cannot fetch data');
     }
   });
-  const [likes, setLikes] = useState(result.isLoading ? 0 : result.data.likes);
-
-  useEffect(() => {
-    if (blog) {
-      setLikes(blog.likes);
-    }
-  }, [blog]);
 
   if (result.isLoading) {
     return <div>loading data...</div>;
   }
 
   blog = result.data;
-
-  if (!blog) return null;
 
   return (
     <>
@@ -54,6 +49,9 @@ export default function Blog({ user }) {
           </button>
         </div>
         <div>added by {blog.user.name}</div>
+
+        <Comments comments={blog.comments} />
+
         {user.id === blog.user.id && (
           <button onClick={handleDelete}>delete</button>
         )}

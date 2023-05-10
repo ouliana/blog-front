@@ -26,7 +26,7 @@ function Navigation() {
       >
         users
       </Link>
-      <span>{user.name} logged in</span>
+      <span>{user.name}</span>
       <button
         onClick={handleLogout}
         data-test='logout'

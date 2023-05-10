@@ -19,7 +19,6 @@ function Login({ handleNotification }) {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
       blogService.setToken(user.token);
-      console.log('user:', user);
       dispatch({ type: 'SIGNEDIN', payload: user });
       navigate('/');
 
