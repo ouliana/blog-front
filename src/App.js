@@ -13,6 +13,7 @@ import User from './components/User';
 
 import blogService from './services/blogs';
 import BlogList from './components/BlogList';
+import Blog from './components/Blog';
 
 export default function App() {
   const dispatchNotification = useNotificationDispatch();
@@ -63,6 +64,11 @@ export default function App() {
                 handleNotification={handleNotification}
               />
             }
+          />
+
+          <Route
+            path='/blogs/:id'
+            element={<Blog user={user} />}
           />
 
           <Route

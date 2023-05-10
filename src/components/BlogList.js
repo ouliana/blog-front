@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 
-import Blog from './Blog';
+import BlogListItem from './BlogListItem';
 import BlogForm from './BlogForm';
 import Togglable from './Togglable';
 import blogService from '../services/blogs';
@@ -54,7 +54,7 @@ function BlogList({ user, handleNotification }) {
       </Togglable>
 
       {blogs.map(blog => (
-        <Blog
+        <BlogListItem
           key={blog.id}
           blog={blog}
           handleLikesUpdate={handleLikesUpdate}

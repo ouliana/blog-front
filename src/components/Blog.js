@@ -1,38 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
+import { useParams, useNavigate } from 'react-router-dom';
+import blogService from '../services/blogs';
+import axios from 'axios';
+const baseUrl = '/api/blogs';
 
-export default function Blog(props) {
-  var { blog, handleLikesUpdate, usersOwnBlog, handleRemove } = props;
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+export default function Blog({ user }) {
+  const id = useParams().id;
+  const navigate = useNavigate();
 
-  const [toShow, setToShow] = useState(false);
-  const [likes, setLikes] = useState(blog.likes);
+  var blog = null;
 
-  var showWhenToShow = { display: toShow ? '' : 'none' };
-  var showWhenOwnBlog = { display: usersOwnBlog ? '' : 'none' };
+  const result = useQuery('blog', async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error('Cannot fetch data');
+    }
+  });
+  const [likes, setLikes] = useState(result.isLoading ? 0 : result.data.likes);
 
-  var buttonLabel = toShow ? 'hide' : 'view';
+  useEffect(() => {
+    if (blog) {
+      setLikes(blog.likes);
+    }
+  }, [blog]);
+
+  if (result.isLoading) {
+    return <div>loading data...</div>;
+  }
+
+  blog = result.data;
+
+  if (!blog) return null;
 
   return (
-    <div style={blogStyle}>
-      <div className='blog'>
+    <>
+      <h2>
         {blog.title} {blog.author}
-        <button
-          onClick={() => setToShow(!toShow)}
-          data-test='toggle-details-visibility'
-        >
-          {buttonLabel}
-        </button>
-      </div>
-      <div
-        style={showWhenToShow}
-        className='blogDetails'
-      >
+      </h2>
+      <div>
         <div>
           <a href={blog.url}>{blog.url}</a>
         </div>
@@ -45,17 +53,12 @@ export default function Blog(props) {
             like
           </button>
         </div>
-        <div>{blog.user.name}</div>
-        <div style={showWhenOwnBlog}>
-          <button
-            onClick={removeBlog}
-            data-test='remove-blog'
-          >
-            remove
-          </button>
-        </div>
+        <div>added by {blog.user.name}</div>
+        {user.id === blog.user.id && (
+          <button onClick={handleDelete}>delete</button>
+        )}
       </div>
-    </div>
+    </>
   );
 
   async function submitLikes() {
@@ -65,13 +68,15 @@ export default function Blog(props) {
       user: blog.user.id,
     };
 
-    await handleLikesUpdate(blogToUpdate);
+    await blogService.update(blogToUpdate);
     setLikes(likes + 1);
   }
 
-  function removeBlog() {
-    if (!window.confirm(`Remove blog ${blog.title}?`)) return;
+  async function handleDelete() {
+    if (!window.confirm(`Delete blog ${blog.title}?`)) return;
 
-    handleRemove(blog.id);
+    await blogService.destroy(blog.id);
+
+    navigate('/');
   }
 }

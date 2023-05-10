@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 const baseUrl = '/api/users';
 
@@ -29,7 +29,9 @@ function User() {
       <h3>added blogs</h3>
       <ul>
         {user.blogs.map(blog => (
-          <li key={generateKey()}>{blog.title}</li>
+          <li key={generateKey()}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </li>
         ))}
       </ul>
     </div>
