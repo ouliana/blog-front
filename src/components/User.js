@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 const baseUrl = '/api/users';
 
-const generateKey = () => Math.floor(Math.floor(Math.random() * 10000));
+//const generateKey = () => Math.floor(Math.floor(Math.random() * 10000));
 
 function User() {
   const id = useParams().id;
@@ -29,7 +29,7 @@ function User() {
       <h3>added blogs</h3>
       <ul>
         {user.blogs.map(blog => (
-          <li key={generateKey()}>
+          <li key={blog.id}>
             <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
           </li>
         ))}

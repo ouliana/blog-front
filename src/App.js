@@ -1,12 +1,18 @@
 import { useEffect, useContext } from 'react';
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 
+import Login from './components/Login';
 import Notification from './components/Notification';
 import { useNotificationDispatch } from './NotificationContext';
 
-import LoginForm from './components/LoginForm';
-import { login } from './services/login';
+import Navigation from './components/Navigation';
+
 import userContext from './UserContext';
 import Users from './components/Users';
 import User from './components/User';
@@ -20,49 +26,49 @@ export default function App() {
   const [user, userDispatch] = useContext(userContext);
 
   useEffect(() => {
-    var loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
-      let user = JSON.parse(loggedUserJSON);
-      userDispatch({ type: 'SIGNEDIN', payload: user });
-      blogService.setToken(user.token);
+      const storedUser = JSON.parse(loggedUserJSON);
+      userDispatch({ type: 'SIGNEDIN', payload: storedUser });
+      blogService.setToken(storedUser.token);
     }
   }, []);
 
-  if (user === null) {
-    return (
-      <div>
-        <h1>Blogs</h1>
-        <Notification />
-
-        <LoginForm loginUser={handleLogin} />
-      </div>
-    );
-  }
-
   return (
     <>
-      <h1>Blogs</h1>
       <Notification />
-      <div>
-        <p className='welcome'>{user.name} logged in</p>
-        <button
-          onClick={handleLogout}
-          data-test='logout'
-        >
-          Sign out
-        </button>
-      </div>
-
-      <div>Links will be here</div>
       <Router>
+        <Navigation />
+        <h1>Blog app</h1>
         <Routes>
           <Route
             path='/'
             element={
-              <BlogList
-                user={user}
-                handleNotification={handleNotification}
-              />
+              user ? (
+                <BlogList
+                  user={user}
+                  handleNotification={handleNotification}
+                />
+              ) : (
+                <Navigate
+                  replace
+                  to='/login'
+                />
+              )
+            }
+          />
+
+          <Route
+            path='/login'
+            element={
+              user ? (
+                <Navigate
+                  replace
+                  to='/'
+                />
+              ) : (
+                <Login handleNotification={handleNotification} />
+              )
             }
           />
 
@@ -86,27 +92,6 @@ export default function App() {
   );
 
   // implementation
-
-  async function handleLogin(userObject) {
-    try {
-      const user = await login(userObject);
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
-
-      blogService.setToken(user.token);
-      console.log('user:', user);
-      userDispatch({ type: 'SIGNEDIN', payload: user });
-
-      handleNotification('USERSIGNEDIN', user);
-    } catch (error) {
-      handleNotification('AUTHERROR', null);
-    }
-  }
-
-  function handleLogout() {
-    window.localStorage.removeItem('loggedBlogappUser');
-    userDispatch({ type: 'CLEAR' });
-  }
 
   function handleNotification(type, payload) {
     dispatchNotification({ type, payload });
