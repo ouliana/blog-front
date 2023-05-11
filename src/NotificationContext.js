@@ -17,6 +17,16 @@ function notificationReducer(state, action) {
         body: `A new blog ${action.payload.title} by ${action.payload.author} is added`,
         type: 'success',
       };
+    case 'EMPTYCOMMENT':
+      return {
+        body: `Empty comment. Please type somehting`,
+        type: 'error',
+      };
+    case 'COMMENTNOTACCEPTED':
+      return {
+        body: `You comment containts something unacceptable. Please reformulate`,
+        type: 'error',
+      };
     case 'CLEAR':
       return null;
     default:

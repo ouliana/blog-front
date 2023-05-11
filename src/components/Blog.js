@@ -50,7 +50,10 @@ export default function Blog({ user }) {
         </div>
         <div>added by {blog.user.name}</div>
 
-        <Comments comments={blog.comments} />
+        <Comments
+          blog={blog}
+          user={user}
+        />
 
         {user.id === blog.user.id && (
           <button onClick={handleDelete}>delete</button>
