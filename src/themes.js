@@ -11,11 +11,10 @@ export const base = {
 export const light = {
   primary: '#4851f4',
   accent: '#fcd34d',
-  //background: 'url("bg.svg");',
-  background: '#fafaf9',
-  nav: '#fafaf9',
-  border: '##d6d3d1',
-  text: '#57534e',
+  background: '#f1f5f9',
+  nav: '#f1f5f9',
+  border: '#cbd5e1',
+  text: '#475569',
 };
 
 export const dark = {

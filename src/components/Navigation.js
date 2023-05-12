@@ -10,47 +10,64 @@ import styled from 'styled-components';
 //import { faSun } from '@fortawesome/free-solid-svg-icons';
 
 import { useThemeValue } from '../contexts/ThemeContext';
-import { base, light, dark } from '../themes';
+import { light, dark } from '../themes';
 const themesMap = {
   light,
   dark,
 };
 // background: ${props => props.theme.colors.background};
 
-const StyledHeader = styled.div.attrs(({ theme }) => ({
-  background: theme.colors.nav,
-}))`
+const StyledHeader = styled.div`
+  background: ${props => props.background};
+  color: ${props => props.text};
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #fcd34d;
+  border-bottom: 1px solid #f87171;
   padding: 1rem;
-  color: Ghostwhite;
 `;
 
 const StyledLink = styled(Link)`
-  color: Ghostwhite;
+  display: block;
+  padding: 0.25rem 1rem;
   text-decoration: none;
   transition: color 1s;
   &:hover {
-    color: burlywood;
+    color: #f87171;
+  }
+  &:visited {
+    color: current;
   }
 `;
 
-const Button = styled.div`
-  font-size: 1rem;
-  margin: 1rem;
-  padding: 0.25rem 1rem;
-  border-radius: 25px;
-  font-size: small;
+console.log({
+  StyledHeader,
+});
 
-  /* Color the border and text with theme.main */
-  color: #fcd34d;
-  border: 1px solid #fcd34d;
+const UserBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+const NavigationBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Button = styled.div`
+  padding: 0.25rem 1rem;
+  margin-left: 1rem;
+  border-radius: 25px;
+  border: 1px solid;
+  border-color: ${props => props.border || 'transparent'};
+  transition: border-color 1s;
+  &:hover {
+    border-color: ${props => props.hover || 'transparent'};
+    cursor: pointer;
+  }
 `;
 
 function Navigation() {
   const currentTheme = useThemeValue();
-  const theme = { ...base, colors: themesMap[currentTheme] };
+  const theme = { colors: themesMap[currentTheme] };
 
   const navigate = useNavigate();
   const [user, userDispatch] = useContext(userContext);
@@ -58,31 +75,26 @@ function Navigation() {
   if (!user) return null;
 
   return (
-    <StyledHeader theme={theme}>
-      <div>
-        <StyledLink
-          theme={theme}
-          to='/'
-        >
-          blogs
-        </StyledLink>
-        <StyledLink
-          theme={theme}
-          to='/users'
-        >
-          users
-        </StyledLink>
-      </div>
-      <div>
-        <span>{user.name}</span>
+    <StyledHeader
+      background={theme.colors.background}
+      text={theme.colors.text}
+    >
+      <NavigationBlock>
+        <StyledLink to='/'>blogs</StyledLink>
+        <StyledLink to='/users'>users</StyledLink>
+      </NavigationBlock>
+      <UserBlock>
+        <Button>{user.name}</Button>
 
         <Button
           onClick={handleLogout}
           data-test='logout'
+          border='#f87171'
+          hover='#dc2626'
         >
           Log out
         </Button>
-      </div>
+      </UserBlock>
     </StyledHeader>
   );
 
