@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import LoginForm from './LoginForm';
-import { useUserDispatch } from '../UserContext';
+import { useUserDispatch } from '../contexts/UserContext';
 
 import { login } from '../services/login';
 import blogService from '../services/blogs';

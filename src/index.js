@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { NotificationContextProvider } from './NotificationContext';
-import { UserContextProvider } from './UserContext';
+import { NotificationContextProvider } from './contexts/NotificationContext';
+import { UserContextProvider } from './contexts/UserContext';
 
 import App from './App';
 

@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 
 import {
   BrowserRouter as Router,
@@ -9,17 +9,20 @@ import {
 
 import Login from './components/Login';
 import Notification from './components/Notification';
-import { useNotificationDispatch } from './NotificationContext';
+import { useNotificationDispatch } from './contexts/NotificationContext';
 
 import Navigation from './components/Navigation';
 
-import userContext from './UserContext';
+import userContext from './contexts/UserContext';
 import Users from './components/Users';
 import User from './components/User';
 
 import blogService from './services/blogs';
 import BlogList from './components/BlogList';
 import Blog from './components/Blog';
+
+import { ThemeContextProvider } from './contexts/ThemeContext';
+import GlobalStyle from './components/GlobalStyle';
 
 export default function App() {
   const dispatchNotification = useNotificationDispatch();
@@ -35,7 +38,8 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <ThemeContextProvider>
+      <GlobalStyle />
       <Notification />
       <Router>
         <Navigation />
@@ -57,7 +61,6 @@ export default function App() {
               )
             }
           />
-
           <Route
             path='/login'
             element={
@@ -71,24 +74,26 @@ export default function App() {
               )
             }
           />
-
           <Route
             path='/blogs/:id'
-            element={<Blog user={user} />}
+            element={
+              <Blog
+                user={user}
+                handleNotification={handleNotification}
+              />
+            }
           />
-
           <Route
             path='/users'
             element={<Users />}
           />
-
           <Route
             path='/users/:id'
             element={<User />}
           />
         </Routes>
       </Router>
-    </>
+    </ThemeContextProvider>
   );
 
   // implementation
